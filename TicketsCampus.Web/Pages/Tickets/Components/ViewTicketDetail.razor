@@ -17,7 +17,7 @@
                         <dd class="col-sm-8">@Ticket.Id</dd>
 
                         <dt class="col-sm-4">Título</dt>
-                        <dd class="col-sm-8">@Ticket.Title</dd>
+                        <dd class="col-sm-8">@Ticket.Title</dd> 
 
                         <dt class="col-sm-4">Detalles</dt>
                         <dd class="col-sm-8">@Ticket.Details</dd>
@@ -32,10 +32,10 @@
 
                         @if (Ticket.DateResolved is not null)
                         {
-                            <dt class="col-sm-4">Fecha de Resolución</dt>
+                            <dt class="col-sm-4">Fecha de Solución</dt>
                             <dd class="col-sm-8">@Ticket.DateResolved?.ToString("dd/MM/yyyy HH:mm")</dd>
 
-                            <dt class="col-sm-4">Descripción de Resolución</dt>
+                            <dt class="col-sm-4">Descripción de Solución</dt>
                             <dd class="col-sm-8">@Ticket.DescriptionResolved</dd>
                         }
                     </dl>

@@ -5,7 +5,7 @@ namespace TicketsCampus.Service.Interoperability.TicketsAgreement.Methods;
 
 public partial class TicketService
 {
-    public Task<TicketDetailDto?> UpdateTicketByIdAsync(UpdateTicket? form)
+    public Task<TicketDetailDto?> CreateTicketByIdAsync(CreateTicket? form)
     {
         try
         {
@@ -14,11 +14,11 @@ public partial class TicketService
                 throw new Exception("El objeto suministrado no puede ser nulo");
             }
 
-            return _config.PatchAsJsonAsync<UpdateTicket, TicketDetailDto>($"tickets/{form.Id}", form);
+            return _config.PostAsJsonAsync<CreateTicket, TicketDetailDto>($"tickets", form);
         }
         catch (Exception e)
         {
-            throw new Exception($"Error al actualizar el ticket: {e.Message}");
+            throw new Exception($"Error al crear el ticket: {e.Message}");
         }
     }
 }

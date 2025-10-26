@@ -56,7 +56,9 @@
                             }
                             else
                             {
-                                <span>—</span>
+                                <button class="btn-ver" @onclick="() => ShowModal(ticketSummary.Id)">
+                                    Ver detalle
+                                </button>
                             }
                         </td>
                     </tr>
@@ -178,6 +180,15 @@
     .btn-gestionar {
         background-color: #2196f3;
         color: white;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .btn-ver {
+        background-color: rgba(255, 245, 0, 0.7);
+        color: black;
         border: none;
         padding: 6px 12px;
         border-radius: 4px;
