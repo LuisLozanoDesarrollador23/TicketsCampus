@@ -9,7 +9,13 @@ public partial class ViewTicketDetail
 {
     [Parameter] public int? TicketId { get; set; }
     [Parameter] public EventCallback OnClose { get; set; }
-    [Inject] private TicketService ServiceTicket { get; set; } = null!;
+
+    /// <summary>
+    ///     Servicio inyectado para los metodos de rest para la entidad de tickets
+    /// </summary>
+    [Inject]
+    private TicketService ServiceTicket { get; set; } = null!;
+
     private UpdateTicketForm ResolutionModel { get; set; } = new();
     private bool IsSubmitting { get; set; }
     private string? ResolutionError { get; set; }
