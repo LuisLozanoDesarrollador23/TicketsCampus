@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Service\TicketsCampus.Service.csproj" />
+    <ProjectReference Include="..\TicketsCampus.Service\TicketsCampus.Service.csproj" />
   </ItemGroup>
 
 </Project>

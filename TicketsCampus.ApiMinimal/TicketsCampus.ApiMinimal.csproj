@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TicketsCampus.Data\TicketsCampus.Data.csproj" />
+    <ProjectReference Include="..\TicketsCampus.Service\TicketsCampus.Service.csproj" />
   </ItemGroup>
 
 </Project>
