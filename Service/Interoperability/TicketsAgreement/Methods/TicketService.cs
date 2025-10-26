@@ -1,6 +1,11 @@
 namespace TicketsCampus.Service.Interoperability.TicketsAgreement.Methods;
 
-public class TicketService
+public partial class TicketService
 {
-    
+    private readonly GeneralConfigurationService _config;
+
+    public TicketService(GeneralConfigurationService config)
+    {
+        _config = config;
+    }
 }

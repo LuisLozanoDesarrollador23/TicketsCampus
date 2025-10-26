@@ -1,27 +1,26 @@
 ﻿using Microsoft.AspNetCore.Components;
-using System.Net.Http.Json;
+using TicketsCampus.Service.Interoperability.TicketsAgreement.Methods;
+using TicketsCampus.Service.Interoperability.TicketsAgreement.Structs.Response;
 
 namespace TicketsCampus.Web.Pages.Tickets;
 
 public partial class TicketsDashboard
 {
-    [Inject] HttpClient Http { get; set; } = null!;
+    [Inject] private TicketService ServiceTicket { get; set; } = null!;
 
-    private WeatherForecast[]? forecasts;
+    private List<TicketSummary>? _ticketSummaries;
+
+    private string? _error;
 
     protected override async Task OnInitializedAsync()
     {
-        forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("sample-data/weather.json");
-    }
-
-    public class WeatherForecast
-    {
-        public DateOnly Date { get; set; }
-
-        public int TemperatureC { get; set; }
-
-        public string? Summary { get; set; }
-
-        public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+        try
+        {
+            _ticketSummaries = await ServiceTicket.GetTicketsAsync();
+        }
+        catch (Exception e)
+        {
+            _error = e.Message;
+        }
     }
 }
