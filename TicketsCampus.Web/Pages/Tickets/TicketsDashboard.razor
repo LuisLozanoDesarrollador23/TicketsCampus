@@ -10,58 +10,72 @@
         <p>En esta vista se visualizan los tickets.</p>
     </div>
 
-    @if (_ticketSummaries != null && _error == null)
+    @if (_filteredTickets != null && _ticketSummaries != null && _error == null)
     {
         <div class="filter-section">
-            <label for="statusFilter">Estado:</label>
-            <select id="statusFilter">
+            <label for="statusFilter">Filtrar por estado:</label>
+            <select id="statusFilter" @onchange="ChangeValueList">
                 <option value="">Todos</option>
-                <option value="Creado">Creado</option>
-                <option value="En Proceso">En Proceso</option>
-                <option value="Cerrado">Cerrado</option>
+                @foreach (var status in Enum.GetValues<TicketStatus>())
+                {
+                    <option value="@status">@ConvertNameEnum.ConvertName(status)</option>
+                }
             </select>
         </div>
 
-        <table class="table">
+        <table class="tickets-table">
             <thead>
             <tr>
                 <th>Id</th>
                 <th>Título</th>
                 <th>Estado</th>
-                <th>F. Creación</th>
-                <th></th>
+                <th>Fecha de Creación</th>
+                <th>Acciones</th>
             </tr>
             </thead>
             <tbody>
-            @foreach (var ticketSummary in _ticketSummaries)
+            @if (_filteredTickets.Any())
+            {
+                @foreach (var ticketSummary in _filteredTickets)
+                {
+                    <tr>
+                        <td>@ticketSummary.Id</td>
+                        <td>@ticketSummary.Title</td>
+                        <td>
+                            <span class="badge-@GetStatusClass(ticketSummary.Status)">
+                                @ConvertNameEnum.ConvertName(ticketSummary.Status)
+                            </span>
+                        </td>
+                        <td>@ticketSummary.Created.ToShortDateString()</td>
+                        <td>
+                            @if (ticketSummary.Status == TicketStatus.Created)
+                            {
+                                <button class="btn-gestionar" @onclick="() => ShowModal(ticketSummary.Id)">
+                                    Gestionar
+                                </button>
+                            }
+                            else
+                            {
+                                <span>—</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+            else
             {
                 <tr>
-                    <td>@ticketSummary.Id</td>
-                    <td>@ticketSummary.Title</td>
-                    <td>
-                        @ticketSummary.Status
-                        @* <span *@
-                        @*     class="status-badge status-@(ticketSummary.Status?.ToLower().Replace(" ", "-") ?? "creado")"> *@
-                        @*     @(ticketSummary.Status ?? "Creado") *@
-                        @* </span> *@
-                    </td>
-                    <td>@ticketSummary.Created.ToShortDateString()</td>
-                    <td>
-                        @if (ticketSummary.Status == TicketStatus.Created)
-                        {
-                            <button class="btn-gestionar" @onclick="() => ShowModal(ticketSummary.Id)">
-                                Gestionar
-                            </button>
-                        }
+                    <td colspan="5" style="text-align: center; padding: 30px; color: #666;">
+                        No se encontraron tickets con el filtro seleccionado.
                     </td>
                 </tr>
             }
             </tbody>
         </table>
 
-        @if (SelectedTicketId.HasValue)
+        @if (_selectedTicketId.HasValue)
         {
-            <ViewTicketDetail TicketId="@SelectedTicketId"
+            <ViewTicketDetail TicketId="@_selectedTicketId"
                               OnClose="@HideModal"/>
         }
     }
@@ -69,26 +83,104 @@
     {
         if (_error != null)
         {
-            <p class="error"><em>@_error</em></p>
+            <p style="color: #d32f2f; padding: 10px; background: #ffebee; border-radius: 4px;">
+                Error: @_error
+            </p>
         }
         else
         {
-            <p class="loading"><em>Loading...</em></p>
+            <p style="color: #666;">Cargando...</p>
         }
     }
 </div>
 
 <style>
-
-    .btn-gestionar {
-        padding: 6px 16px;
-        background-color: #007bff;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 14px;
-        transition: background-color 0.2s;
+    .tickets-container {
+        padding: 20px;
+        max-width: 1400px;
+        margin: 0 auto;
     }
 
+    .tickets-header h1 {
+        font-size: 24px;
+        margin: 0 0 5px 0;
+    }
+
+    .tickets-header p {
+        color: #666;
+        margin: 0 0 20px 0;
+    }
+
+    .filter-section {
+        margin-bottom: 20px;
+    }
+
+    .filter-section label {
+        margin-right: 10px;
+    }
+
+    .filter-section select {
+        padding: 5px 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+
+    .tickets-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+    }
+
+    .tickets-table th {
+        text-align: left;
+        padding: 10px;
+        border-bottom: 2px solid #ddd;
+        font-weight: 600;
+    }
+
+    .tickets-table td {
+        padding: 10px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .badge-created {
+        background-color: #e3f2fd;
+        color: #1976d2;
+        padding: 4px 8px;
+        border-radius: 3px;
+        font-size: 13px;
+    }
+
+    .badge-inprogress {
+        background-color: #fff3e0;
+        color: #f57c00;
+        padding: 4px 8px;
+        border-radius: 3px;
+        font-size: 13px;
+    }
+
+    .badge-resolved {
+        background-color: #e8f5e9;
+        color: #388e3c;
+        padding: 4px 8px;
+        border-radius: 3px;
+        font-size: 13px;
+    }
+
+    .badge-closed {
+        background-color: #f5f5f5;
+        color: #616161;
+        padding: 4px 8px;
+        border-radius: 3px;
+        font-size: 13px;
+    }
+
+    .btn-gestionar {
+        background-color: #2196f3;
+        color: white;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
 </style>

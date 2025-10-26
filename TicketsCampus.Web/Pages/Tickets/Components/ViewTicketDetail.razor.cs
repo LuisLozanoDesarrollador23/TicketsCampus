@@ -9,9 +9,7 @@ public partial class ViewTicketDetail
 {
     [Parameter] public int? TicketId { get; set; }
     [Parameter] public EventCallback OnClose { get; set; }
-    [Parameter] public EventCallback OnTicketResolved { get; set; }
     [Inject] private TicketService ServiceTicket { get; set; } = null!;
-
     private UpdateTicketForm ResolutionModel { get; set; } = new();
     private bool IsSubmitting { get; set; }
     private string? ResolutionError { get; set; }
@@ -29,6 +27,10 @@ public partial class ViewTicketDetail
             catch (Exception e)
             {
                 ResolutionError = e.Message;
+            }
+            finally
+            {
+                StateHasChanged();
             }
         }
     }
@@ -53,7 +55,6 @@ public partial class ViewTicketDetail
             };
 
             await ServiceTicket.UpdateTicketByIdAsync(updateRequest);
-            await OnTicketResolved.InvokeAsync();
             await Close();
         }
         catch (Exception ex)

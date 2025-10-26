@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using TicketsCampus.Service.Interoperability.TicketsAgreement.Enum;
 using TicketsCampus.Service.Interoperability.TicketsAgreement.Methods;
 using TicketsCampus.Service.Interoperability.TicketsAgreement.Structs.Response;
 
@@ -14,33 +15,58 @@ public partial class TicketsDashboard
 
     private string? _error;
 
-    private int? SelectedTicketId;
+    private int? _selectedTicketId;
 
-    private bool ShowDetailModal;
-
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        try
+        if (firstRender)
         {
-            _ticketSummaries = await ServiceTicket.GetTicketsAsync();
-            _filteredTickets = _ticketSummaries;
+            try
+            {
+                _ticketSummaries = await ServiceTicket.GetTicketsAsync();
+                _filteredTickets = _ticketSummaries;
+            }
+            catch (Exception e)
+            {
+                _error = e.Message;
+            }
+            finally
+            {
+                StateHasChanged();
+            }
         }
-        catch (Exception e)
-        {
-            _error = e.Message;
-        }
+    }
+
+    private void ChangeValueList(ChangeEventArgs e)
+    {
+        if (_ticketSummaries == null) return;
+        var value = e.Value?.ToString();
+        _filteredTickets = Enum.TryParse<TicketStatus>(value, out var parsed)
+            ? _ticketSummaries.Where(s => s.Status == parsed).ToList()
+            : _ticketSummaries.ToList();
     }
 
     private void ShowModal(int id)
     {
-        SelectedTicketId = id;
-        ShowDetailModal = true;
+        _selectedTicketId = id;
+        StateHasChanged();
     }
 
     private async Task HideModal()
     {
-        ShowDetailModal = false;
+        _selectedTicketId = null;
         _ticketSummaries = await ServiceTicket.GetTicketsAsync();
         StateHasChanged();
+    }
+
+    private string GetStatusClass(TicketStatus status)
+    {
+        return status switch
+        {
+            TicketStatus.Created => "created",
+            TicketStatus.InProgress => "inprogress",
+            TicketStatus.Resolved => "resolved",
+            _ => "created"
+        };
     }
 }
