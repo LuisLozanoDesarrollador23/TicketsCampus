@@ -33,4 +33,9 @@ public class Ticket
     ///     Estado actual del ticket.
     /// </summary>
     public TicketStatus Status { get; set; }    
+
+    /// <summary>
+    ///  Relación con el detalle de la gestión del ticket.
+    /// </summary>
+    public TicketDetail? TicketDetail { get; set; }
 }

@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <Folder Include="Interoperability\TicketsAggregament\Methods\" />
+    <Folder Include="Interoperability\TicketsAggregament\Structs\Response\" />
   </ItemGroup>
 
 </Project>
