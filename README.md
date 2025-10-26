@@ -51,6 +51,8 @@ El proyecto está organizado en 4 capas principales:
 
   <img width="1892" height="828" alt="image" src="https://github.com/user-attachments/assets/dda8e7de-5dce-49cf-b04f-3b28bcabbe89" />
 
+## video:
 
+https://github.com/LuisLozanoDesarrollador23/TicketsCampus/blob/master/Service/Video_Funcionalidad.mp4
 
 
