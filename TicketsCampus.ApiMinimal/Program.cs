@@ -53,25 +53,58 @@ app.MapPost("/tickets", async (CreateTicket ticket, MainDataContext db) =>
 // Obtener todos los tickets
 app.MapGet("/tickets", async (MainDataContext db) =>
     await db.Tickets
-        .Select(t => new TicketSummary(t.Id, t.Title, t.CreatedAt, t.Status))
+        .Select(t => new TicketSummaryDto(t.Id, t.Title, t.CreatedAt, t.Status))
         .ToListAsync());
 
 // Obtener un ticket por ID
 app.MapGet("/tickets/{id:int}", async (int id, MainDataContext db) =>
-    await db.Tickets.FindAsync(id)
-        is Ticket ticket
-        ? Results.Ok(ticket)
-        : Results.NotFound());
+{
+    var ticket = await db.Tickets
+        .Include(t => t.TicketDetail)
+        .FirstOrDefaultAsync(t => t.Id == id);
+
+    if (ticket == null)
+        return Results.NotFound();
+
+    var dto = new TicketDetailDto(
+        ticket.Id,
+        ticket.Title,
+        ticket.Description,
+        ticket.CreatedAt,
+        ticket.Status,
+        ticket.TicketDetail?.Description,
+        ticket.TicketDetail?.CreatedAt
+    );
+
+    return Results.Ok(dto);
+});
 
 // Actualizar un ticket (solo estado)
-app.MapPut("/tickets/{id:int}", async (int id, Ticket updatedTicket, MainDataContext db) =>
+app.MapPatch("/tickets/{id:int}", async (int id, UpdateTicket updatedTicket, MainDataContext db) =>
 {
-    var ticket = await db.Tickets.FindAsync(id);
+    var ticket = await db.Tickets.Include(s => s.TicketDetail).FirstOrDefaultAsync(t => t.Id == id);
     if (ticket is null) return Results.NotFound();
 
-    ticket.Status = updatedTicket.Status;
+    ticket.Status = TicketStatus.Resolved;
+    ticket.TicketDetail = new TicketDetail
+    {
+        Description = updatedTicket.Description,
+        CreatedAt = updatedTicket.DateUpdate
+    };
+
     await db.SaveChangesAsync();
-    return Results.Ok(ticket);
+
+    var dto = new TicketDetailDto(
+        ticket.Id,
+        ticket.Title,
+        ticket.Description,
+        ticket.CreatedAt,
+        ticket.Status,
+        ticket.TicketDetail?.Description,
+        ticket.TicketDetail?.CreatedAt
+    );
+
+    return Results.Ok(dto); 
 });
 
 app.Run();

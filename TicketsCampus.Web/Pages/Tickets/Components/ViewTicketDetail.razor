@@ -1,5 +1,105 @@
-<h3>ViewTicketDetail</h3>
+@using System.Globalization
+@using TicketsCampus.Service.Interoperability.TicketsAgreement.Enum
 
-@code {
-    
-}
+<div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content shadow-lg border-0 rounded-4">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">Detalle del Ticket</h5>
+                <button type="button" class="btn-close btn-close-white" @onclick="Close"></button>
+            </div>
+
+            @if (Ticket is not null)
+            {
+                <div class="modal-body">
+                    <dl class="row">
+                        <dt class="col-sm-4">ID</dt>
+                        <dd class="col-sm-8">@Ticket.Id</dd>
+
+                        <dt class="col-sm-4">Título</dt>
+                        <dd class="col-sm-8">@Ticket.Title</dd>
+
+                        <dt class="col-sm-4">Detalles</dt>
+                        <dd class="col-sm-8">@Ticket.Details</dd>
+
+                        <dt class="col-sm-4">Estado</dt>
+                        <dd class="col-sm-8">
+                            <span>@Ticket.Status</span>
+                        </dd>
+
+                        <dt class="col-sm-4">Fecha de Creación</dt>
+                        <dd class="col-sm-8">@Ticket.Created.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)</dd>
+
+                        @if (Ticket.DateResolved is not null)
+                        {
+                            <dt class="col-sm-4">Fecha de Resolución</dt>
+                            <dd class="col-sm-8">@Ticket.DateResolved?.ToString("dd/MM/yyyy HH:mm")</dd>
+
+                            <dt class="col-sm-4">Descripción de Resolución</dt>
+                            <dd class="col-sm-8">@Ticket.DescriptionResolved</dd>
+                        }
+                    </dl>
+
+                    @if (Ticket.Status != TicketStatus.Resolved)
+                    {
+                        <hr class="my-4"/>
+
+                        <h6 class="text-primary mb-3">Gestionar Ticket</h6>
+
+                        <EditForm Model="@ResolutionModel" OnValidSubmit="HandleResolveTicket">
+                            <DataAnnotationsValidator/>
+
+                            <div class="mb-3">
+                                <label for="descriptionResolved" class="form-label">Descripción de la Resolución</label>
+                                <InputTextArea
+                                    id="descriptionResolved"
+                                    class="form-control"
+                                    @bind-Value="ResolutionModel.Description"
+                                    rows="4"
+                                    placeholder="Describe cómo se resolvió el ticket..."/>
+                                <ValidationMessage For="@(() => ResolutionModel.Description)"/>
+                            </div>
+
+                            @if (!string.IsNullOrEmpty(ResolutionError))
+                            {
+                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                    @ResolutionError
+                                    <button type="button" class="btn-close"
+                                            @onclick="@(() => ResolutionError = null)"></button>
+                                </div>
+                            }
+
+                            <div class="d-flex justify-content-end gap-2">
+                                <button type="button" class="btn btn-outline-secondary" @onclick="Close">
+                                    Cancelar
+                                </button>
+                                <button type="submit" class="btn btn-success" disabled="@IsSubmitting">
+                                    @if (IsSubmitting)
+                                    {
+                                        <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                                        <span>Procesando...</span>
+                                    }
+                                    else
+                                    {
+                                        <span>Marcar como Gestionado</span>
+                                    }
+                                </button>
+                            </div>
+                        </EditForm>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="modal-body text-center text-muted">
+                    <p>No se encontró el ticket solicitado.</p>
+                </div>
+            }
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary" @onclick="Close">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+

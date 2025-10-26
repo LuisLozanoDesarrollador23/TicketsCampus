@@ -1,19 +1,20 @@
+using TicketsCampus.Service.Interoperability.TicketsAgreement.Structs.Request;
 using TicketsCampus.Service.Interoperability.TicketsAgreement.Structs.Response;
 
 namespace TicketsCampus.Service.Interoperability.TicketsAgreement.Methods;
 
 public partial class TicketService
 {
-    public Task<TicketDetailDto?> GetTicketByIdAsync(int? id)
+    public Task<TicketDetailDto?> UpdateTicketByIdAsync(UpdateTicket? form)
     {
         try
         {
-            if (!id.HasValue)
+            if (form == null)
             {
-                throw new Exception($"No se suministro un identificador para realizar la consulta");
+                throw new Exception("El objeto suministrado no puede ser nulo");
             }
 
-            return _config.GetFromJsonAsync<TicketDetailDto>($"tickets/{id}");
+            return _config.PatchAsJsonAsync<UpdateTicket, TicketDetailDto>($"tickets/{form.Id}", form);
         }
         catch (Exception e)
         {

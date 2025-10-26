@@ -4,8 +4,8 @@ namespace TicketsCampus.Service.Interoperability.TicketsAgreement.Methods;
 
 public partial class TicketService
 {
-    public Task<List<TicketSummary>?> GetTicketsAsync()
+    public Task<List<TicketSummaryDto>?> GetTicketsAsync()
     {
-        return _config.GetFromJsonAsync<List<TicketSummary>>("tickets");
+        return _config.GetFromJsonAsync<List<TicketSummaryDto>>("tickets");
     }
 }

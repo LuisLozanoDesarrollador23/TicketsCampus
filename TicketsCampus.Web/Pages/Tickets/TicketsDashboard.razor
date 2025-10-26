@@ -1,44 +1,94 @@
 ﻿@page "/tickets"
+@using TicketsCampus.Service.Interoperability.TicketsAgreement.Enum
+@using TicketsCampus.Web.Pages.Tickets.Components
 
 <PageTitle>Tickets</PageTitle>
 
-<h1>Tickets</h1>
+<div class="tickets-container">
+    <div class="tickets-header">
+        <h1>Tickets</h1>
+        <p>En esta vista se visualizan los tickets.</p>
+    </div>
 
-<p>En esta vista se visualizan los tickets.</p>
-
-@if (_ticketSummaries != null && _error == null)
-{
-    <table class="table">
-        <thead>
-        <tr>
-            <th>Id</th>
-            <th>Titulo</th>
-            <th>F. Creación</th>
-        </tr>
-        </thead>
-        <tbody>
-        @foreach (var ticketSummary in _ticketSummaries)
-        {
-            <tr>
-
-                <td>@ticketSummary.Id</td>
-                <td>@ticketSummary.Title</td>
-                <td>@ticketSummary.Created.ToShortDateString()</td>
-            </tr>
-        }
-        </tbody>
-    </table>
-}
-else
-{
-    if (_error != null)
+    @if (_ticketSummaries != null && _error == null)
     {
-        <p><em>@_error</em></p>
+        <div class="filter-section">
+            <label for="statusFilter">Estado:</label>
+            <select id="statusFilter">
+                <option value="">Todos</option>
+                <option value="Creado">Creado</option>
+                <option value="En Proceso">En Proceso</option>
+                <option value="Cerrado">Cerrado</option>
+            </select>
+        </div>
+
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Id</th>
+                <th>Título</th>
+                <th>Estado</th>
+                <th>F. Creación</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var ticketSummary in _ticketSummaries)
+            {
+                <tr>
+                    <td>@ticketSummary.Id</td>
+                    <td>@ticketSummary.Title</td>
+                    <td>
+                        @ticketSummary.Status
+                        @* <span *@
+                        @*     class="status-badge status-@(ticketSummary.Status?.ToLower().Replace(" ", "-") ?? "creado")"> *@
+                        @*     @(ticketSummary.Status ?? "Creado") *@
+                        @* </span> *@
+                    </td>
+                    <td>@ticketSummary.Created.ToShortDateString()</td>
+                    <td>
+                        @if (ticketSummary.Status == TicketStatus.Created)
+                        {
+                            <button class="btn-gestionar" @onclick="() => ShowModal(ticketSummary.Id)">
+                                Gestionar
+                            </button>
+                        }
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+
+        @if (SelectedTicketId.HasValue)
+        {
+            <ViewTicketDetail TicketId="@SelectedTicketId"
+                              OnClose="@HideModal"/>
+        }
     }
     else
     {
-        <p><em>Loading...</em></p>
+        if (_error != null)
+        {
+            <p class="error"><em>@_error</em></p>
+        }
+        else
+        {
+            <p class="loading"><em>Loading...</em></p>
+        }
     }
-}
+</div>
 
+<style>
 
+    .btn-gestionar {
+        padding: 6px 16px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: background-color 0.2s;
+    }
+
+</style>
