@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using TicketsCampus.Service.Interoperability.TicketsAggregament.Enum;
+using TicketsCampus.Service.Interoperability.TicketsAgreement.Enum;
 
 namespace TicketsCampus.Data.Models;
 

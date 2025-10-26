@@ -1,8 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using TicketsCampus.Data;
 using TicketsCampus.Data.Models;
-using TicketsCampus.Service.Interoperability.TicketsAggregament.Enum;
-using TicketsCampus.Service.Interoperability.TicketsAggregament.Structs.Request;
+using TicketsCampus.Service.Interoperability.TicketsAgreement.Enum;
+using TicketsCampus.Service.Interoperability.TicketsAgreement.Structs.Request;
+using TicketsCampus.Service.Interoperability.TicketsAgreement.Structs.Response;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,7 +18,6 @@ app.MapGet("/", () => "Hello World!");
 // Crear un nuevo ticket
 app.MapPost("/tickets", async (CreateTicket ticket, MainDataContext db) =>
 {
-
     var createTicket = new Ticket
     {
         Title = ticket.Title,
@@ -32,8 +32,12 @@ app.MapPost("/tickets", async (CreateTicket ticket, MainDataContext db) =>
 });
 
 // Obtener todos los tickets
-app.MapGet("/tickets", async (MainDataContext db) =>
-    await db.Tickets.ToListAsync());
+app.MapGet("/tickets",
+    async (MainDataContext db) =>
+    {
+        return await db.Tickets.Select(t => new TicketSummary(t.Id, t.Title, t.CreatedAt, t.Status)).ToListAsync();
+    });
+
 
 // Obtener un ticket por ID
 app.MapGet("/tickets/{id:int}", async (int id, MainDataContext db) =>
@@ -46,7 +50,7 @@ app.MapGet("/tickets/{id:int}", async (int id, MainDataContext db) =>
 app.MapPut("/tickets/{id:int}", async (int id, Ticket updatedTicket, MainDataContext db) =>
 {
     var ticket = await db.Tickets.FindAsync(id);
-    if (ticket is null) return Results.NotFound();    
+    if (ticket is null) return Results.NotFound();
     ticket.Status = updatedTicket.Status;
     await db.SaveChangesAsync();
     return Results.Ok(ticket);

@@ -1,4 +1,4 @@
-﻿namespace TicketsCampus.Service.Interoperability.TicketsAggregament.Enum;
+﻿namespace TicketsCampus.Service.Interoperability.TicketsAgreement.Enum;
 
 public enum TicketStatus
 {    

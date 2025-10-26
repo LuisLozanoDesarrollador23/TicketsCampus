@@ -1,4 +1,4 @@
-﻿namespace TicketsCampus.Service.Interoperability.TicketsAggregament.Structs.Request;
+﻿namespace TicketsCampus.Service.Interoperability.TicketsAgreement.Structs.Request;
 
 public class CreateTicket
 {
