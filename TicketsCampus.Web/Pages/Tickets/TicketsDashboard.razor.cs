@@ -76,6 +76,7 @@ public partial class TicketsDashboard
     {
         _selectedTicketId = null;
         _ticketSummaries = await ServiceTicket.GetTicketsAsync();
+        _filteredTickets = _ticketSummaries;
         StateHasChanged();
     }
 
